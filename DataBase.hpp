@@ -1,13 +1,12 @@
 #pragma once
 
-#include <iostream>
+#include <fstream>
 #include <vector>
 #include <string> 
 
 template<typename DataType>
 class DataBase {
     std::vector<DataType> slots;
-    const char* filePath;
 
 public:
 // ***** constructor & destructor ***** //
@@ -68,84 +67,116 @@ public:
 
 template <typename DataType>
 DataBase<DataType>::DataBase()
-{ }
+{}
 
 template <typename DataType>
 DataBase<DataType>::DataBase(const char* path)
-: filePath{path}
 {
-    load(filePath);
+    load(path);
 }
 
 template <typename DataType>
-DataBase<DataType>::DataBase(const std::string& path)
-: filePath{path}
+DataBase<DataType>::DataBase(const std::string& path) 
 {
     load(path);
 }
 
 template <typename DataType>
 DataBase<DataType>::DataBase(const DataBase& other)
-: slots{other.slots}, filePath{other.filePath}
-{
-    
-}
+: slots{other.slots}
+{}
 
 template <typename DataType>
 DataBase<DataType>::DataBase(DataBase&& other)
-: slots{std::move(other.slots)}, filePath{other.filePath}
-{
-}
+: slots{std::move(other.slots)}
+{}
 
 template <typename DataType>
-DataBase<DataType>::~DataBase()
-{
-    upload(filePath);
-}
+DataBase<DataType>::~DataBase() 
+{}
 
 // ***** functionality methods ***** //
 
 
 template <typename DataType>
-inline size_t DataBase<DataType>::size() const
-{
+inline size_t DataBase<DataType>::size() const {
     return slots.size();
 }
 
 template <typename DataType>
-inline DataType& DataBase<DataType>::getSlot(size_t idx)
-{
+inline DataType& DataBase<DataType>::getSlot(size_t idx) {
     return slots[idx];
 }
 
 template <typename DataType>
-inline DataType& DataBase<DataType>::operator[](size_t idx)
-{
+inline DataType& DataBase<DataType>::operator[](size_t idx) {
     return slots[idx];
 }
 
 template <typename DataType>
-void DataBase<DataType>::load(const char* path)
-{
-    
+void DataBase<DataType>::load(const char* path) {
+    std::ifstream file{path};
+    std::string line;
+
+    while(std::getline(file, line)) {
+        size_t strLen = line.length();
+        // if the string is empty
+        if (strLen == 0) {
+            continue;
+        }
+        // if the string ends with '\n' -> remove '\n'
+        if (line[strLen - 1] == '\n') {
+            line.resize(strLen - 1);
+        }
+
+        slots.emplace_back(line, ',');
+    }
+
+    file.close();
 }
 
 template <typename DataType>
-void DataBase<DataType>::load(const std::string& path)
-{
+void DataBase<DataType>::load(const std::string& path) {
+    std::ifstream file{path};
+    std::string line;
 
+    while(std::getline(file, line)) {
+        size_t strLen = line.length();
+        // if the string is empty
+        if (strLen == 0) {
+            continue;
+        }
+        // if the string ends with '\n' -> remove '\n'
+        if (line[strLen - 1] == '\n') {
+            line.resize(strLen - 1);
+        }
+
+        slots.emplace_back(line, ',');
+    }
+
+    file.close();
 }
 
 template <typename DataType>
-void DataBase<DataType>::upload(const char* path)
-{
+void DataBase<DataType>::upload(const char* path) {
+    std::ofstream file{path};
 
+    for (const DataType& slot: slots) {
+        file << slot.parseToCsv(',') << std::endl;
+    }
+
+    file.close();
 }
 
 template <typename DataType>
-void DataBase<DataType>::upload(const std::string& path)
-{
+void DataBase<DataType>::upload(const std::string& path) {
+    std::ofstream file{path};
 
+    for (const DataType& slot : slots) {
+        file << slot.parseToCsv(',') << std::endl;
+    }
+
+    file.close();
 }
 
 // ***** for iteration ***** //
@@ -157,13 +188,12 @@ inline auto DataBase<DataType>::begin() {
 }
 
 template <typename DataType>
-auto DataBase<DataType>::end() {
+inline auto DataBase<DataType>::end() {
     return slots.end();
 }
 
 template <typename DataType>
 template <typename... Args>
-void DataBase<DataType>::addSlot(Args... args)
-{
+void DataBase<DataType>::addSlot(Args... args) {
     slots.emplace_back(args...);
 }

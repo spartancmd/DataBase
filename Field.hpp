@@ -10,6 +10,8 @@ class Field {
     std::string schoolClass;
     short age;
 
+    // returns the string without outern quotation marks(=symbol ")
+    std::string removeQM(const std::string& str) const;
 public:
 // ******* constructors and destructors ******* //
 
@@ -21,6 +23,10 @@ public:
     // Creates an object of the class with initialized fields
     explicit Field(unsigned id_, const std::string& firstName_, const std::string& secondName_, const std::string& schoolClass_, short age_);
 
+    // .csv parse constructor.
+    // Creates an object by a string in .csv format
+    explicit Field(const std::string& str, const char sep = ',');
+
     // Move-constructor (for the case if an rvalue of this class assigned)
     Field(Field&& other);
 
@@ -29,6 +35,16 @@ public:
 
     // Destructor
     ~Field();
+
+    // parses given string (in .csv format) and sets the object variables.
+    // str should have this form: id,"first name","second name","schoolclass", age
+    void parseFromCsv(const std::string& str, const char sep = ',');
+
+    // returns the stored data as string seperated by ',' in this format: "id,"firstname", "secondname", "schoolclass", age"
+    std::string parseToCsv(const char sep = ',') const;
+
+    // returns headers for table in csv-format
+    std::string headerCsv() const;
 
 // ******* get operators ******* //
 
@@ -84,16 +100,33 @@ public:
 //    DEFINITIONS OF METHODS       //
 // ******************************* // 
 
+std::string Field::removeQM(const std::string &str) const {
+    std::string res;
+
+    for (size_t i = 0; i < str.length() - 1; i++) {
+        res += str[i];
+    }    
+    
+    return res;
+}
+
 // ******* constructors and destructors ******* //
 
-Field::Field() 
+
+
+Field::Field()
 {}
 
 Field::Field(unsigned id_, const std::string& firstName_, const std::string& secondName_, const std::string& schoolClass_, short age_)
 : id{id_}, firstName{firstName_}, secondName{secondName_}, schoolClass{schoolClass_}, age{age_} 
 {}
 
-Field::Field(Field&& other)
+Field::Field(const std::string& str, const char sep)
+{
+    parseFromCsv(str, sep);
+}
+
+Field::Field(Field &&other)
 {
     id = other.id;
     firstName = other.firstName;
@@ -114,7 +147,46 @@ Field::Field(const Field& other)
 Field::~Field()
 {}
 
+void Field::parseFromCsv(const std::string& str, const char sep) {
+    std::vector<std::string> elements; // should contain the elements that are in str
+
+    size_t i = 0;
+    size_t n = str.length();
+
+    // append the the elements in the string to the vector elements
+    while (i < n) {
+        std::string cur;
+
+
+        while(i < n && str[i] != sep && str[i] != '\n') {
+            cur += str[i];
+            i++;
+        }
+
+        elements.push_back(cur);
+
+        i++;
+    }
+
+    // the extracted elements are put into our class variables
+    id = std::stoi(elements[0]);
+    firstName = removeQM(elements[1]);
+    secondName = removeQM(elements[2]);
+    schoolClass = removeQM(elements[3]);
+    age = std::stoi(elements[0]);
+}
+
+inline std::string Field::parseToCsv(const char sep) const {
+    return std::to_string(id) + sep + '\"' + firstName + '\"' + sep + '\"' +  secondName + '\"' + sep + '\"' + schoolClass + '\"' + sep + std::to_string(age);
+}
+
+inline std::string Field::headerCsv() const {
+    return "Id,First name,Second name,School class,Age";
+}
+
 // ******* get operators ******* //
+
+
 
 unsigned Field::get_id() const {
     return id;
