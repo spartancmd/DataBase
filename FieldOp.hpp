@@ -21,7 +21,7 @@ namespace FieldOp {
 
 // ***** search ***** //
 
-    // searches after the given keyword
+    // returns all slots that include the given keyword
     std::vector<Field> filterFor(DataBase<Field>& db, const std::string& keyWord);
 
 // ***** sort in increasing (A - Z) order ***** //
@@ -111,7 +111,7 @@ bool FieldOp::is_number(const std::string& str)
     // iterating through every character of str
     for (char it : str) {
         // if not a number -> return false
-        if (it < '0' && it > '9') {
+        if (it < '0' || it > '9') {
             return false;
         }
     }
@@ -149,8 +149,8 @@ void FieldOp::sort_firstName(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[i].get_firstName()), lowerCase(db[i + 1].get_firstName()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (strGreater(lowerCase(db[j].get_firstName()), lowerCase(db[j + 1].get_firstName()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -161,8 +161,8 @@ void FieldOp::sort_secondName(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[i].get_secondName()), lowerCase(db[i + 1].get_secondName()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (strGreater(lowerCase(db[j].get_secondName()), lowerCase(db[j + 1].get_secondName()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -173,8 +173,8 @@ void FieldOp::sort_schoolClass(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[i].get_schoolClass()), lowerCase(db[i + 1].get_schoolClass()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (strGreater(lowerCase(db[j].get_schoolClass()), lowerCase(db[j + 1].get_schoolClass()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -184,9 +184,9 @@ void FieldOp::sort_id(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1 - j; j++) {
-            if (db[i].get_id() > db[i + 1].get_id()) {
-                swap<Field>(db[i], db[i + 1]);
+        for (int j = 0; j < (n - 1 - i); j++) {
+            if (db[j].get_id() > db[j + 1].get_id()) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -196,9 +196,9 @@ void FieldOp::sort_age(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1 - j; j++) {
-            if (db[i].get_age() > db[i + 1].get_age()) {
-                swap<Field>(db[i], db[i + 1]);
+        for (int j = 0; j < (n - 1 - i); j++) {
+            if (db[j].get_age() > db[j + 1].get_age()) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -212,8 +212,8 @@ void FieldOp::dSort_firstName(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[i].get_firstName()), lowerCase(db[i + 1].get_firstName()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (!strGreater(lowerCase(db[j].get_firstName()), lowerCase(db[j + 1].get_firstName()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -224,8 +224,8 @@ void FieldOp::dSort_secondName(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[i].get_secondName()), lowerCase(db[i + 1].get_secondName()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (!strGreater(lowerCase(db[j].get_secondName()), lowerCase(db[j + 1].get_secondName()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -236,8 +236,8 @@ void FieldOp::dSort_schoolClass(DataBase<Field>& db) {
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[i].get_schoolClass()), lowerCase(db[i + 1].get_schoolClass()))) {
-                swap<Field>(db[i], db[i + 1]);
+            if (!strGreater(lowerCase(db[j].get_schoolClass()), lowerCase(db[j + 1].get_schoolClass()))) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -247,9 +247,9 @@ void FieldOp::dSort_id(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1 - j; j++) {
-            if (db[i].get_id() < db[i + 1].get_id()) {
-                swap<Field>(db[i], db[i + 1]);
+        for (int j = 0; j < (n - 1 - i); j++) {
+            if (db[j].get_id() < db[j + 1].get_id()) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }
@@ -259,9 +259,9 @@ void FieldOp::dSort_age(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1 - j; j++) {
-            if (db[i].get_age() < db[i + 1].get_age()) {
-                swap<Field>(db[i], db[i + 1]);
+        for (int j = 0; j < (n - 1 - i); j++) {
+            if (db[j].get_age() < db[j + 1].get_age()) {
+                swap<Field>(db[j], db[j + 1]);
             }
         }
     }

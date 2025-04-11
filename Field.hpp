@@ -41,12 +41,18 @@ public:
     void parseFromCsv(const std::string& str, const char sep = ',');
 
     // returns the stored data as string seperated by ',' in this format: "id,"firstname", "secondname", "schoolclass", age"
+    // With '\n' at the end
     std::string parseToCsv(const char sep = ',') const;
 
     // returns headers for table in csv-format
-    std::string headerCsv() const;
+    std::string headerCsv(const char sep = ' ') const;
 
 // ******* get operators ******* //
+
+    static std::string getHeadLine(const char sep = '\t');
+
+    // returns a line with elements
+    std::string getRowLine(const char sep = '\t') const;
 
     // return the id of the current field
     unsigned get_id() const;
@@ -103,7 +109,7 @@ public:
 std::string Field::removeQM(const std::string &str) const {
     std::string res;
 
-    for (size_t i = 0; i < str.length() - 1; i++) {
+    for (size_t i = 1; i < str.length() - 1; i++) {
         res += str[i];
     }    
     
@@ -129,18 +135,18 @@ Field::Field(const std::string& str, const char sep)
 Field::Field(Field &&other)
 {
     id = other.id;
-    firstName = other.firstName;
-    secondName = other.secondName;
-    schoolClass = other.schoolClass;
+    firstName = std::move(other.firstName);
+    secondName = std::move(other.secondName);
+    schoolClass = std::move(other.schoolClass);
     age = other.age;
 }
 
 Field::Field(const Field& other)
 {
     id = other.id;
-    firstName = std::move(other.firstName);
-    secondName = std::move(other.secondName);
-    schoolClass = std::move(other.schoolClass);
+    firstName = other.firstName;
+    secondName = other.secondName;
+    schoolClass = other.schoolClass;
     age = other.age;
 }
 
@@ -152,13 +158,17 @@ void Field::parseFromCsv(const std::string& str, const char sep) {
 
     size_t i = 0;
     size_t n = str.length();
+    bool inQuotes = false;
 
     // append the the elements in the string to the vector elements
     while (i < n) {
         std::string cur;
-
-
-        while(i < n && str[i] != sep && str[i] != '\n') {
+        
+        // iterate through the element until line break or next seperator. If there're quotes, they'll be ignored.
+        while(i < n && (str[i] != sep || inQuotes) && str[i] != '\n') {
+            if (str[i] == '\"') {
+                inQuotes = !inQuotes; // inverting the bool-val of inQuotes
+            }
             cur += str[i];
             i++;
         }
@@ -173,20 +183,30 @@ void Field::parseFromCsv(const std::string& str, const char sep) {
     firstName = removeQM(elements[1]);
     secondName = removeQM(elements[2]);
     schoolClass = removeQM(elements[3]);
-    age = std::stoi(elements[0]);
+    age = std::stoi(elements[4]);
 }
 
 inline std::string Field::parseToCsv(const char sep) const {
-    return std::to_string(id) + sep + '\"' + firstName + '\"' + sep + '\"' +  secondName + '\"' + sep + '\"' + schoolClass + '\"' + sep + std::to_string(age);
+    return std::to_string(id) + sep + '\"' + firstName + '\"' + sep + '\"' +  secondName + '\"' + sep + '\"' + schoolClass + '\"' + sep + std::to_string(age) + '\n';
 }
 
-inline std::string Field::headerCsv() const {
-    return "Id,First name,Second name,School class,Age";
+inline std::string Field::headerCsv(const char sep) const {
+    return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep +  "Age" + '\n';
 }
+
+
 
 // ******* get operators ******* //
 
+inline std::string Field::getHeadLine(const char sep)
+{
+    return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep + "Age";
+}
 
+inline std::string Field::getRowLine(const char sep) const
+{
+    return std::to_string(id) + sep + firstName + sep +  secondName + sep + schoolClass + sep + std::to_string(age);
+}
 
 unsigned Field::get_id() const {
     return id;
@@ -254,21 +274,22 @@ int Field::set_age(short newVal) {
 // **** operators **** //
 
 Field& Field::operator=(const Field& other) {
-    unsigned id = other.id;
-    std::string firstName = other.firstName;
-    std::string secondName = other.secondName;
-    std::string schoolClass = other.schoolClass;
-    short age = other.age;
+    
+    id = other.id;
+    firstName = other.firstName;
+    secondName = other.secondName;
+    schoolClass = other.schoolClass;
+    age = other.age;
 
     return *this;
 }
 
 Field& Field::operator=(Field&& other) {
-    unsigned id = other.id;
-    std::string firstName = std::move(other.firstName);
-    std::string secondName = std::move(other.secondName);
-    std::string schoolClass = std::move(other.schoolClass);
-    short age = other.age;
+    id = other.id;
+    firstName = std::move(other.firstName);
+    secondName = std::move(other.secondName);
+    schoolClass = std::move(other.schoolClass);
+    age = other.age;
 
     return *this;
 }
