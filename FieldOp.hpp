@@ -128,7 +128,7 @@ std::vector<Field> FieldOp::filterFor(DataBase<Field>& db, const std::string& ke
     // iterate through each field of db, and add to res if there's at least one element with variable == keyWord
     for (const Field& cur : db) {
         // if the keyword is a digit -> append to res
-        if(is_number(keyWord) && cur.get_age() == stoi(keyWord) || cur.get_id() == stoi(keyWord)) {
+        if(is_number(keyWord) && (cur.get_age() == stoi(keyWord) || cur.get_id() == stoi(keyWord))) {
             res.push_back(cur);
             continue;
         }

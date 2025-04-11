@@ -8,6 +8,8 @@ template<typename DataType>
 class DataBase {
     std::vector<DataType> slots;
 
+    // swaps two elements
+    void swap(DataType& a, DataType& b);
 public:
 // ***** constructor & destructor ***** //
 
@@ -53,6 +55,9 @@ public:
     // copies the already existing obj of DataType to a new slot in data base
     void addSlot(const DataType& other);
 
+    // removes a slot by index
+    void removeSlot(size_t idx);
+
     // opens file by path and saves the slots
     void load(const char* path);
         
@@ -76,7 +81,17 @@ public:
     auto end() const;
 };
 
+template <typename DataType>
+void DataBase<DataType>::swap(DataType& a, DataType& b)
+{
+    DataType tmp = a;
+    a = b;
+    b = tmp;
+}
+
 // ***** constructor & destructor ***** //
+
+
 
 template <typename DataType>
 DataBase<DataType>::DataBase()
@@ -211,4 +226,18 @@ void DataBase<DataType>::addSlot(Args... args) {
 template<typename DataType>
 void DataBase<DataType>::addSlot(const DataType& other) {
     slots.push_back(other);
+}
+
+template <typename DataType>
+void DataBase<DataType>::removeSlot(size_t idx) {
+   
+    slots.erase(slots.begin() + idx);
+
+    // when manually:
+    // size_t n = slots.size();
+    // for (size_t i = idx; i < n - 1; i++) {
+    //     swap(slots[i], slots[i + 1]);
+    // }
+
+    // slots.resize(n - 1);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 // after following schema: id, first name, second name, class, age
 class Field {
@@ -45,7 +46,7 @@ public:
     std::string parseToCsv(const char sep = ',') const;
 
     // returns headers for table in csv-format
-    std::string headerCsv(const char sep = ' ') const;
+    static std::string headerCsv(const char sep = ' ');
 
 // ******* get operators ******* //
 
@@ -190,7 +191,7 @@ inline std::string Field::parseToCsv(const char sep) const {
     return std::to_string(id) + sep + '\"' + firstName + '\"' + sep + '\"' +  secondName + '\"' + sep + '\"' + schoolClass + '\"' + sep + std::to_string(age) + '\n';
 }
 
-inline std::string Field::headerCsv(const char sep) const {
+inline std::string Field::headerCsv(const char sep) {
     return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep +  "Age" + '\n';
 }
 
