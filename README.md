@@ -7,7 +7,7 @@ Written by Deniel
 ## TODO:
 A list of what else I should/can do:
 - [x] Add a TUI
-- ~~[ ] Add input tests to the methods~~ Not needed. Tests should be handled by the user of the library.
+- [ ] ~~Add input tests to the methods~~ Not needed. Tests should be handled by the user of the library.
 > [!WARNING]
 > The consequence of giving over invalid arguments is undefined behaviour. The responsibility is on the user
 
