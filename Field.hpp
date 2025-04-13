@@ -50,7 +50,11 @@ public:
 
 // ******* get operators ******* //
 
+    // returns the headline as std::string
     static std::string getHeadLine(const char sep = '\t');
+
+    // return the headlines as a vector of std::strings
+    static std::vector<std::string> getHeadVector();
 
     // returns a line with elements
     std::string getRowLine(const char sep = '\t') const;
@@ -199,13 +203,23 @@ inline std::string Field::headerCsv(const char sep) {
 
 // ******* get operators ******* //
 
-inline std::string Field::getHeadLine(const char sep)
-{
+inline std::string Field::getHeadLine(const char sep) {
     return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep + "Age";
 }
 
-inline std::string Field::getRowLine(const char sep) const
-{
+std::vector<std::string> Field::getHeadVector() {
+    std::vector<std::string> headLine(5); // reserving vector for 5 elements
+
+    headLine[0] = "Id";
+    headLine[1] = "First name";
+    headLine[2] = "Second name";
+    headLine[3] = "School class";
+    headLine[4] = "Age";
+
+    return headLine;
+}
+
+inline std::string Field::getRowLine(const char sep) const {
     return std::to_string(id) + sep + firstName + sep +  secondName + sep + schoolClass + sep + std::to_string(age);
 }
 

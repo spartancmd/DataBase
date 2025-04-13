@@ -6,8 +6,8 @@ Written by Deniel
 
 ## TODO:
 A list of what else I should/can do:
-- [] Add a TUI
-- [] Add input controlls to the methods
+- [x] Add a TUI
+- ~~[] Add input tests to the methods~~ Not needed. Tests should be handled by the user of the library.
 > [!WARNING]
 > The consequence of giving over invalid arguments is undefined behaviour. The responsibility is on the user
 
@@ -25,8 +25,18 @@ Everything else is written by me:
 - main.cpp _(With its interface)_
 
 ## How to use
-In this case there's TUI (Terminal User Interface) to work with the Data Base.
-For a list of commands you should type "help" as the programm started.
+In this case there's TUI (Terminal User Interface) to work with the Data Base. <br>
+For a list of commands you can type "help" in the programm or read it here:
+
+- open \<filePath\> _-> loads the file by the given path_
+- view-all _-> prints all slots in the terminal_
+- exit _(optional: \<filePath\>)_ _-> leave the programm and upload all changes. When needed choose a **additional** file path to save in_
+- add-slot \<id\> \<first name\> \<second name\> \<class\> \<age\> _-> adds a new slot to data base with thoose arguments_
+- remove-slot \<id\> _-> remove slot from data base by id_
+- search-for \<keyword\> _-> output all slots with the given keyword_
+- sort-after id/"first name"/"second name"/class/age _-> sorts the data base in increasing order after the choosen element_
+- sort-decrease-after id/first name/secondname/class/age _-> sorts in decreasing order after the choosen element_
+
 
 ### Work with data base manually
 The data base is made to work with .csv files.

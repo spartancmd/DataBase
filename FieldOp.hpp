@@ -22,7 +22,7 @@ namespace FieldOp {
 // ***** search ***** //
 
     // returns all slots that include the given keyword
-    std::vector<Field> filterFor(DataBase<Field>& db, const std::string& keyWord);
+    std::vector<Field> searchFor(DataBase<Field>& db, const std::string& keyWord);
 
 // ***** sort in increasing (A - Z) order ***** //
 
@@ -121,7 +121,7 @@ bool FieldOp::is_number(const std::string& str)
 
 // ***** search ***** //
 
-std::vector<Field> FieldOp::filterFor(DataBase<Field>& db, const std::string& keyWord)
+std::vector<Field> FieldOp::searchFor(DataBase<Field>& db, const std::string& keyWord)
 {
     std::vector<Field> res;
 
