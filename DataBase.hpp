@@ -10,7 +10,6 @@ class DataBase {
     bool stateFileLoaded = false;    // the state if the file is already loaded
     std::string filePath;     // contains the filepath that we've loaded from
 
-    // swaps two elements
     static void swap(DataType& a, DataType& b);
 
     // creates the file, if it doesn't exist yet
@@ -18,33 +17,24 @@ class DataBase {
 public:
 // ***** constructor & destructor ***** //
 
-    // constructor without args
     DataBase();
 
-    // constructor that loads content of the file
     explicit DataBase(const char* path);
 
-    // constructor that instantly opens the file
     explicit DataBase(const std::string& path);
 
-    // copy-constructor
     DataBase(const DataBase& other);
 
-    // move-contructor
     DataBase(DataBase&& other);
 
-    // destructor
     ~DataBase();
 
 // ***** functionality methods ***** //
     
-    // return the count of elements in the data base
     size_t size() const;
 
-    // returns a reference of a slot at the given idx
     DataType& getSlot(size_t idx);
 
-    // returns a reference of a slot at the given idx
     const DataType& getSlot(size_t idx) const;
 
     std::string getFilePath() const;
@@ -52,10 +42,8 @@ public:
     // return true if a file is already loaded
     bool fileLoaded() const;
 
-    // returns a reference of a slot at the given idx
     DataType& operator[](size_t idx);
 
-    // returns a reference of a slot at the given idx
     const DataType& operator[](size_t idx) const;
 
     // creates a new slots with given init arguments
@@ -65,7 +53,6 @@ public:
     // copies the already existing obj of DataType to a new slot in data base
     void addSlot(const DataType& other);
 
-    // removes a slot by index
     void removeSlot(size_t idx);
 
     // opens file by path and saves the slots
@@ -104,7 +91,7 @@ void DataBase<DataType>::swap(DataType& a, DataType& b)
 
 template <typename DataType>
 void DataBase<DataType>::createFile(const char* filePath) {
-    std::ofstream(filePath, std::ios_base::app).close(); // create the file if it doesn't exist yet
+    std::ofstream(filePath, std::ios_base::app).close();
 }
 
 // ***** constructor & destructor ***** //
@@ -187,11 +174,10 @@ void DataBase<DataType>::load(const char* path) {
 
     while(std::getline(file, line)) {
         size_t strLen = line.length();
-        // if the string is empty
         if (strLen == 0) {
             continue;
         }
-        // if the string ends with '\n' -> remove '\n'
+        // if the string ends with '\n' -> remove '\n' by resize
         if (line[strLen - 1] == '\n') {
             line.resize(strLen - 1);
         }
@@ -273,14 +259,5 @@ void DataBase<DataType>::addSlot(const DataType& other) {
 
 template <typename DataType>
 void DataBase<DataType>::removeSlot(size_t idx) {
-   
     slots.erase(slots.begin() + idx);
-
-    // when manually:
-    // size_t n = slots.size();
-    // for (size_t i = idx; i < n - 1; i++) {
-    //     swap(slots[i], slots[i + 1]);
-    // }
-
-    // slots.resize(n - 1);
 }

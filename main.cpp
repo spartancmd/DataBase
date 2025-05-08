@@ -63,31 +63,28 @@ namespace CommandOp {
 
 
 int main(int argc, char* argv[]) {
-    DataBase<Field> db; // the data base it-self
-    std::string input; // the user input
-    std::vector<std::string> parsedInput; // will be the parsed user input to work with multiple arguments
-    CommandOp::COMMAND opt; // the option that will be defined after user input
+    DataBase<Field> db;
+    std::string input;
+    std::vector<std::string> parsedInput; 
+    CommandOp::COMMAND opt;
 
-    // if second argument is path
+    // if there's a second arg, it should be a path
     if (argc > 1) {
         db.load(argv[1]);
-        printf("Loaded from file %s\n\n", argv[1]);
+        std::cout << "Loaded from file" << argv[1] << '\n' <<  std::endl;
     }
 
     do {
-        // read command
-        printf("> ");
-        getline(std::cin, input); // reading the whole inputed line into input
-        printf("\n");
+        std::cout << "> ";
+        getline(std::cin, input);
+        std::cout << std::endl;;
         CommandOp::parseInput(parsedInput, input);
 
-        // decide how to proceed with the input
         opt = CommandOp::selectCommand(parsedInput[0]);
         CommandOp::redirectCommand(opt, parsedInput, db);
 
     } while (opt != CommandOp::COMMAND::EXIT);
 
-    // we've exit with file opened
     if (db.fileLoaded()) 
         db.upload();
 
@@ -146,14 +143,14 @@ void CommandOp::redirectCommand(const COMMAND opt, const std::vector<std::string
         case COMMAND::HELP:
             CommandOp::help(input, db);
             break;
-        default: // if unknown
-            printf("Unknown command. Try \"help\" to get a list of possible commands.\n\n");
+        default:
+            std::cout << "Unknown command. Try \"help\" to get a list of possible commands.\n" << std::endl;
     }
 }
 
 void CommandOp::open(const std::vector<std::string>& input, DataBase<Field>& db) {
     if (input.size() == 1) {
-        printf("Path missing.\n\n");
+        std::cout << "Path missing.\n" << std::endl;
         return;
     }
 
@@ -162,9 +159,8 @@ void CommandOp::open(const std::vector<std::string>& input, DataBase<Field>& db)
 }
 
 void CommandOp::view_all(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
 
@@ -173,7 +169,7 @@ void CommandOp::view_all(const std::vector<std::string>& input, DataBase<Field>&
     for (const auto& it : db) {
         std::cout << it.getRowLine('\t') << std::endl;
     }
-    printf("\n");
+    std::cout << std::endl;
 }
 
 void CommandOp::exit(const std::vector<std::string>& input, DataBase<Field>& db) {
@@ -186,25 +182,24 @@ void CommandOp::exit(const std::vector<std::string>& input, DataBase<Field>& db)
 }
 
 void CommandOp::add_slot(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
     
-    // if input doesnt have enough arguments
+    // if not enough args
     if (input.size() < 6) {
-        printf("Not all elements defined.\n\n");
+        std::cout << "Not all elements defined.\n" << std::endl;
         return;
     }
 
     // 1. and 5. indexes should be numbers
     if (!FieldOp::is_number(input[1])) {
-        printf("Type id as a dezimal number\n\n");
+        std::cout << "Type id as a decimal number\n" << std::endl;
         return;
     }
     if (!FieldOp::is_number(input[5])) {
-        printf("Type age as a dezimal number\n\n");
+        std::cout << "Type age as a decimal number\n" << std::endl;
         return;
     }
 
@@ -212,25 +207,24 @@ void CommandOp::add_slot(const std::vector<std::string>& input, DataBase<Field>&
 }
 
 void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
 
-    // if input doesnt have enough arguments
+    // if not enough args
     if (input.size() == 1) {
-        printf("No id given.\n\n");
+        std::cout << "No id given.\n" << std::endl;
         return;
     }    
-    // if the data base is empty
+
     if (db.size() == 0) {
-        printf("Data base is empty.\n\n");
+        std::cout << "Data base is empty.\n" << std::endl;
         return;
     }
     
     if (!FieldOp::is_number(input[1])) {
-        printf("Type id as a dezimal number\n\n");
+        std::cout << "Type id as a dezimal number\n" << std::endl;
         return;
     }
 
@@ -244,24 +238,23 @@ void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Fiel
         }
     }
 
-    printf("No element with this the given id: %d\n\n", targetId);
+    std::cout << "No element with this the given id: " << targetId << '\n' << std::endl;
 }
 
 void CommandOp::search_for(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
     
-    // if input doesnt have enough arguments
+    // if not enough args
     if (input.size() == 1) {
-        printf("No keyword to search for.\n\n");
+        std::cout << "No keyword to search for.\n" << std::endl;
         return;
     }
-    // if the data base is empty
+
     if (db.size() == 0) {
-        printf("Data base is empty.\n\n");
+        std::cout << "Data base is empty.\n" << std::endl;
         return;
     }
 
@@ -271,28 +264,27 @@ void CommandOp::search_for(const std::vector<std::string>& input, DataBase<Field
     for (const auto& it : slots) {
         std::cout << it.getRowLine('\t') << std::endl;
     }
-    printf("\n");
+    std::cout << std::endl;
 }
 
 void CommandOp::sort_after(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
     
-    // if input doesnt have enough arguments
+    // if not enough args
     if (input.size() == 1) {
-        printf("No keyword to sort after for.\n\n");
-        return;
-    }
-    // if the data base is empty
-    if (db.size() == 0) {
-        printf("Data base is empty. Try to add slots.\n\n");
+        std::cout << "No keyword to sort after for.\n" << std::endl;
         return;
     }
 
-    const std::string& sortTarget = input[1]; // element that we sort after
+    if (db.size() == 0) {
+        std::cout << "Data base is empty. Try to add slots.\n" << std::endl;
+        return;
+    }
+
+    const std::string& sortTarget = input[1];
 
     std::cout << "Sorting after " << sortTarget << "..." << std::endl;
     if (sortTarget == "id") {
@@ -316,24 +308,22 @@ void CommandOp::sort_after(const std::vector<std::string>& input, DataBase<Field
 }
 
 void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataBase<Field>& db) {
-    // if no file was loaded
     if (!db.fileLoaded()) {
-        printf("No file opened yet!\n\n");
+        std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
     
-    // if input doesnt have enough arguments
     if (input.size() == 1) {
-        printf("No keyword to sort after.\n\n");
+        std::cout << "No keyword to sort after.\n" << std::endl;
         return;
     }
-    // if the data base is empty
+    
     if (db.size() == 0) {
-        printf("Data base is empty. Try to add slots.\n\n");
+        std::cout << "Data base is empty. Try to add slots.\n" << std::endl;
         return;
     }
 
-    const std::string& sortTarget = input[1]; // element that we sort after
+    const std::string& sortTarget = input[1];
 
     std::cout << "Sorting in decreasing order after " << sortTarget << "..." << std::endl;
     if (sortTarget == "id") {
@@ -357,7 +347,7 @@ void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataB
 }
 
 void CommandOp::help(const std::vector<std::string>& input, DataBase<Field>& db) {
-    printf("Commands to choose:\nopen <filePath>\nview-all \nexit (optional: <filePath>)\nadd-slot <id> <first name> <second name> <class> <age>\nremove-slot <id>\nsearch-for <keyword>\nsort-after id/\"first name\"/\"second name\"/class/age\nsort-decrease-after id/\"first name\"/\"second name\"/class/age\n\n");
+    std::cout << "Commands to choose:\nopen <filePath>\nview-all \nexit (optional: <filePath>)\nadd-slot <id> <first name> <second name> <class> <age>\nremove-slot <id>\nsearch-for <keyword>\nsort-after id/\"first name\"/\"second name\"/class/age\nsort-decrease-after id/\"first name\"/\"second name\"/class/age\n" << std::endl;
 }
 
 void CommandOp::parseInput(std::vector<std::string>& target, const std::string& source, const char sep) {
