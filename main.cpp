@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <algorithm>
 
 #include "DataBase.hpp"
 #include "Field.hpp"
@@ -19,18 +20,20 @@ namespace CommandOp {
         SORT_DECREASE_AFTER,
         UNKNOWN,
         HELP,
+        EDIT,
+        REGENERATE,
     };
 
     // writes the seperated input in source into target
     void parseInput(std::vector<std::string>& target, const std::string& source, const char sep = ' ');
 
     // returns the selected command as an enum, to be useable in switch-case
-    COMMAND selectCommand(const std::string& option);
+    COMMAND formatToCommand(const std::string& option);
 
     // calls the choosen command
     void redirectCommand(const COMMAND opt, const std::vector<std::string>& input, DataBase<Field>& db);
 
-    // all input commands
+    // ********** all input commands ********** //
 
     // loads file into db
     void open(const std::vector<std::string>& input, DataBase<Field>& db);
@@ -58,6 +61,10 @@ namespace CommandOp {
     
     // prints possible commands
     void help(const std::vector<std::string>& input, DataBase<Field>& db);
+
+    void edit(const std::vector<std::string>& input, DataBase<Field>& db);
+
+    void regenerate(const std::vector<std::string>& input, DataBase<Field>& db);
 }
 
 
@@ -71,7 +78,7 @@ int main(int argc, char* argv[]) {
     // if there's a second arg, it should be a path
     if (argc > 1) {
         db.load(argv[1]);
-        std::cout << "Loaded from file" << argv[1] << '\n' <<  std::endl;
+        std::cout << "Loaded from file " << argv[1] << '\n' <<  std::endl;
     }
 
     do {
@@ -80,7 +87,7 @@ int main(int argc, char* argv[]) {
         std::cout << std::endl;;
         CommandOp::parseInput(parsedInput, input);
 
-        opt = CommandOp::selectCommand(parsedInput[0]);
+        opt = CommandOp::formatToCommand(parsedInput[0]);
         CommandOp::redirectCommand(opt, parsedInput, db);
 
     } while (opt != CommandOp::COMMAND::EXIT);
@@ -91,7 +98,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-CommandOp::COMMAND CommandOp::selectCommand(const std::string& option) {
+CommandOp::COMMAND CommandOp::formatToCommand(const std::string& option) {
     if (option == "open")
         return COMMAND::OPEN;
     if (option == "view-all")
@@ -110,6 +117,12 @@ CommandOp::COMMAND CommandOp::selectCommand(const std::string& option) {
         return COMMAND::SORT_DECREASE_AFTER;
     if (option == "help")
         return COMMAND::HELP;
+    if (option == "edit") {
+        return COMMAND::EDIT;
+    }
+    if (option == "regenerate-ids") {
+        return COMMAND::REGENERATE;
+    }
     
     return COMMAND::UNKNOWN;
 }
@@ -143,9 +156,76 @@ void CommandOp::redirectCommand(const COMMAND opt, const std::vector<std::string
         case COMMAND::HELP:
             CommandOp::help(input, db);
             break;
+        case COMMAND::EDIT:
+            CommandOp::edit(input, db);
+            break;
+        case COMMAND::REGENERATE:
+            CommandOp::regenerate(input, db);
+            break;
         default:
             std::cout << "Unknown command. Try \"help\" to get a list of possible commands.\n" << std::endl;
     }
+}
+
+void CommandOp::edit(const std::vector<std::string>& input, DataBase<Field>& db) {
+    if (!db.fileLoaded()) {
+        std::cout << "No file opened yet!\n" << std::endl;
+        return;
+    }
+    if (input.size() < 6) {
+        std::cout << "Not all elements defined.\n" << std::endl;
+        return;
+    }
+    if (!db.size()) {
+        std::cout << "Data base is empty.\n" << std::endl;
+        return;
+    }
+    // 1. and 5. index should be numbers
+    if (!FieldOp::is_number(input[5])) {
+        std::cout << "Type age as a decimal number\n" << std::endl;
+        return;
+    }
+    if (!FieldOp::is_number(input[1])) {
+        std::cout << "Type id as a decimal number\n" << std::endl;
+        return;
+    }
+
+    unsigned targetId = stoi(input[1]);
+    size_t i = 0;
+    size_t n = db.size();
+    for (; i < n; i++) {
+        if (db[i].get_id() == targetId) 
+            break;
+    }
+    if (i >= n) {
+        std::cout << "No element found under id " << targetId << '\n' << std::endl;
+        return;
+    }
+
+    db[i].set_firstName(input[2]);
+    db[i].set_secondName(input[3]);
+    db[i].set_schoolClass(input[4]);
+    db[i].set_age(stoi(input[5]));
+
+    std::cout << "Slot has been changed.\n" << std::endl;
+}
+
+void CommandOp::regenerate(const std::vector<std::string>& input, DataBase<Field>& db) {
+    if (!db.fileLoaded()) {
+        std::cout << "No file opened yet!\n" << std::endl;
+        return;
+    }
+    if (!db.size()) {
+        std::cout << "Data base is empty.\n" << std::endl;
+        return;
+    }
+
+    size_t n = db.size();
+    for (size_t i = 0; i < n; i++) {
+        db[i].set_id(i + 1);
+    }
+
+    std::cout << "All ids have been regenerated.\n" << std::endl;
 }
 
 void CommandOp::open(const std::vector<std::string>& input, DataBase<Field>& db) {
@@ -186,24 +266,29 @@ void CommandOp::add_slot(const std::vector<std::string>& input, DataBase<Field>&
         std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
-    
-    // if not enough args
-    if (input.size() < 6) {
+    if (input.size() < 5) {
         std::cout << "Not all elements defined.\n" << std::endl;
         return;
     }
-
-    // 1. and 5. indexes should be numbers
-    if (!FieldOp::is_number(input[1])) {
-        std::cout << "Type id as a decimal number\n" << std::endl;
-        return;
-    }
-    if (!FieldOp::is_number(input[5])) {
+    // 5. index should be numbers
+    if (!FieldOp::is_number(input[4])) {
         std::cout << "Type age as a decimal number\n" << std::endl;
         return;
     }
 
-    db.addSlot(stoi(input[1]), input[2], input[3], input[4], stoi(input[5]));
+    unsigned id = 0;
+    // creating an id after maximum
+    size_t n = db.size();
+    int cur = 0;
+    for (int i = 0; i < n; i++) {
+        cur = db[i].get_id();
+        id = cur > id ? cur : id;
+    }
+    id++;
+ 
+    db.addSlot(id, input[1], input[2], input[3], stoi(input[4]));
+
+    std::cout << "New slot added.\n" << std::endl;
 }
 
 void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Field>& db) {
@@ -211,14 +296,12 @@ void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Fiel
         std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
-
-    // if not enough args
     if (input.size() == 1) {
         std::cout << "No id given.\n" << std::endl;
         return;
     }    
 
-    if (db.size() == 0) {
+    if (!db.size()) {
         std::cout << "Data base is empty.\n" << std::endl;
         return;
     }
@@ -234,10 +317,11 @@ void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Fiel
     for (size_t i = 0; i < n; i++) {
         if (db[i].get_id() == targetId) {
             db.removeSlot(i);
+            std::cout << "Slot removed.\n" << std::endl;
             return;
         }
     }
-
+    
     std::cout << "No element with this the given id: " << targetId << '\n' << std::endl;
 }
 
@@ -246,8 +330,6 @@ void CommandOp::search_for(const std::vector<std::string>& input, DataBase<Field
         std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
-    
-    // if not enough args
     if (input.size() == 1) {
         std::cout << "No keyword to search for.\n" << std::endl;
         return;
@@ -272,8 +354,6 @@ void CommandOp::sort_after(const std::vector<std::string>& input, DataBase<Field
         std::cout << "No file opened yet!\n" << std::endl;
         return;
     }
-    
-    // if not enough args
     if (input.size() == 1) {
         std::cout << "No keyword to sort after for.\n" << std::endl;
         return;
@@ -303,8 +383,11 @@ void CommandOp::sort_after(const std::vector<std::string>& input, DataBase<Field
         FieldOp::sort_age(db);
     }
     else {
-        std::cerr << "Element" << sortTarget << " does not exist!\n" << std::endl;
+        std::cerr << "Element " << sortTarget << " does not exist!\n" << std::endl;
+        return;
     }
+
+    std::cout << "Sorting completed.\n" << std::endl;
 }
 
 void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataBase<Field>& db) {
@@ -342,12 +425,15 @@ void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataB
         FieldOp::dSort_age(db);
     }
     else {
-        std::cerr << "Element" << sortTarget << " does not exist!\n" << std::endl;
+        std::cout << "Element " << sortTarget << " does not exist!\n" << std::endl;
+        return;
     }
+
+    std::cout << "Sorting completed.\n" << std::endl;
 }
 
 void CommandOp::help(const std::vector<std::string>& input, DataBase<Field>& db) {
-    std::cout << "Commands to choose:\nopen <filePath>\nview-all \nexit (optional: <filePath>)\nadd-slot <id> <first name> <second name> <class> <age>\nremove-slot <id>\nsearch-for <keyword>\nsort-after id/\"first name\"/\"second name\"/class/age\nsort-decrease-after id/\"first name\"/\"second name\"/class/age\n" << std::endl;
+    std::cout << "Commands to choose:\nopen <filePath>\nview-all \nexit (optional: <filePath>)\nadd-slot <first name> <second name> <class> <age>\nremove-slot <id>\nsearch-for <keyword>\nsort-after id/\"first name\"/\"second name\"/class/age\nsort-decrease-after id/\"first name\"/\"second name\"/class/age\nedit <id> <first name> <second name> <class> <age>\nregenerate-ids\n" << std::endl;
 }
 
 void CommandOp::parseInput(std::vector<std::string>& target, const std::string& source, const char sep) {

@@ -90,10 +90,9 @@ std::string FieldOp::lowerCase(const std::string& str) {
     return res;
 }
 
-bool FieldOp::is_number(const std::string& str)
-{
-    for (char it : str) {
-        if (it < '0' || it > '9') {
+bool FieldOp::is_number(const std::string& str) {
+    for (const char sym : str) {
+        if (sym < '0' || sym > '9') {
             return false;
         }
     }
