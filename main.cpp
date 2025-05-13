@@ -193,6 +193,7 @@ void CommandOp::edit(const std::vector<std::string>& input, DataBase<Field>& db)
     unsigned targetId = stoi(input[1]);
     size_t i = 0;
     size_t n = db.size();
+    
     for (; i < n; i++) {
         if (db[i].get_id() == targetId) 
             break;
