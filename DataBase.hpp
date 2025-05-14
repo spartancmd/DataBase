@@ -13,13 +13,11 @@ class DataBase {
     static void swap(DataType& a, DataType& b);
 
     // creates the file, if it doesn't exist yet
-    static void createFile(const char* filePath);
+    static void createFile(const std::string& filePath);
 public:
 // ***** constructor & destructor ***** //
 
     DataBase();
-
-    explicit DataBase(const char* path);
 
     explicit DataBase(const std::string& path);
 
@@ -33,13 +31,12 @@ public:
     
     size_t size() const;
 
-    DataType& getSlot(size_t idx);
+    DataType& slot(size_t idx);
 
-    const DataType& getSlot(size_t idx) const;
+    const DataType& slot(size_t idx) const;
 
     std::string getFilePath() const;
 
-    // return true if a file is already loaded
     bool fileLoaded() const;
 
     DataType& operator[](size_t idx);
@@ -54,18 +51,12 @@ public:
     void addSlot(const DataType& other);
 
     void removeSlot(size_t idx);
-
-    // opens file by path and saves the slots
-    void load(const char* path);
         
     // opens file by path and saves the slots
     void load(const std::string& path);
 
     // saves slots into the file, we've loaded from
     void upload() const;
-
-    // saves the slots into the file
-    void upload(const char* path) const;
 
     // saves the slots into the file
     void upload(const std::string& path) const;
@@ -82,15 +73,14 @@ public:
 };
 
 template <typename DataType>
-void DataBase<DataType>::swap(DataType& a, DataType& b)
-{
+void DataBase<DataType>::swap(DataType& a, DataType& b) {
     DataType tmp = a;
     a = b;
     b = tmp;
 }
 
 template <typename DataType>
-void DataBase<DataType>::createFile(const char* filePath) {
+void DataBase<DataType>::createFile(const std::string& filePath) {
     std::ofstream(filePath, std::ios_base::app).close();
 }
 
@@ -103,15 +93,9 @@ DataBase<DataType>::DataBase()
 {}
 
 template <typename DataType>
-DataBase<DataType>::DataBase(const char* path)
-{
-    load(path);
-}
-
-template <typename DataType>
 DataBase<DataType>::DataBase(const std::string& path)
 {
-    load(path.c_str());
+    load(path);
 }
 
 template <typename DataType>
@@ -125,64 +109,66 @@ DataBase<DataType>::DataBase(DataBase&& other)
 {}
 
 template <typename DataType>
-DataBase<DataType>::~DataBase() 
-{}
+DataBase<DataType>::~DataBase() {
+    if (stateFileLoaded) {
+        upload(filePath);
+    }
+}
 
 // ***** functionality methods ***** //
 
 
 template <typename DataType>
-inline size_t DataBase<DataType>::size() const {
+size_t DataBase<DataType>::size() const {
     return slots.size();
 }
 
 template <typename DataType>
-inline DataType& DataBase<DataType>::getSlot(size_t idx) {
+DataType& DataBase<DataType>::slot(size_t idx) {
     return slots[idx];
 }
 
 template <typename DataType>
-inline const DataType& DataBase<DataType>::getSlot(size_t idx) const {
+const DataType& DataBase<DataType>::slot(size_t idx) const {
     return slots[idx];
 }
 
 template <typename DataType>
-inline std::string DataBase<DataType>::getFilePath() const {
+std::string DataBase<DataType>::getFilePath() const {
     return filePath;
 }
 
 template <typename DataType>
-inline bool DataBase<DataType>::fileLoaded() const {
+bool DataBase<DataType>::fileLoaded() const {
     return stateFileLoaded;
 }
 
 template <typename DataType>
-inline DataType& DataBase<DataType>::operator[](size_t idx) {
+DataType& DataBase<DataType>::operator[](size_t idx) {
     return slots[idx];
 }
 
 template <typename DataType>
-inline const DataType& DataBase<DataType>::operator[](size_t idx) const {
+const DataType& DataBase<DataType>::operator[](size_t idx) const {
     return slots[idx];
 }
 
 template <typename DataType>
-void DataBase<DataType>::load(const char* path) {
+void DataBase<DataType>::load(const std::string& path) {
     createFile(path);
     std::ifstream file{path};
     std::string line;
 
     while(std::getline(file, line)) {
-        size_t strLen = line.length();
-        if (strLen == 0) {
+        
+        if (line.empty()) {
             continue;
         }
-        // if the string ends with '\n' -> remove '\n' by resize
-        if (line[strLen - 1] == '\n') {
-            line.resize(strLen - 1);
+        if (line.back() == '\n') {
+            line.pop_back();
         }
 
-        slots.emplace_back(line, ',');
+        slots.emplace_back(line, ','); // why ','? It's a parameter sep in constructor of struct Field
     }
 
     file.close();
@@ -191,13 +177,7 @@ void DataBase<DataType>::load(const char* path) {
 }
 
 template <typename DataType>
-inline void DataBase<DataType>::load(const std::string& path) {
-    load(path.c_str());
-}
-
-template <typename DataType>
-void DataBase<DataType>::upload() const
-{
+void DataBase<DataType>::upload() const {
     std::ofstream file{filePath};
 
     for (const DataType& slot: slots) {
@@ -208,7 +188,7 @@ void DataBase<DataType>::upload() const
 }
 
 template <typename DataType>
-void DataBase<DataType>::upload(const char* path) const {
+void DataBase<DataType>::upload(const std::string& path) const {
     std::ofstream file{path};
 
     for (const DataType& slot: slots) {
@@ -218,31 +198,26 @@ void DataBase<DataType>::upload(const char* path) const {
     file.close();
 }
 
-template <typename DataType>
-inline void DataBase<DataType>::upload(const std::string& path) const {
-    upload(path.c_str());
-}
-
 // ***** for iteration ***** //
 
 
 template <typename DataType>
-inline auto DataBase<DataType>::begin() {
+auto DataBase<DataType>::begin() {
     return slots.begin();
 }
 
 template <typename DataType>
-inline auto DataBase<DataType>::begin() const {
+auto DataBase<DataType>::begin() const {
     return slots.begin();
 }
 
 template <typename DataType>
-inline auto DataBase<DataType>::end() {
+auto DataBase<DataType>::end() {
     return slots.end();
 }
 
 template <typename DataType>
-inline auto DataBase<DataType>::end() const {
+auto DataBase<DataType>::end() const {
     return slots.end();
 }
 

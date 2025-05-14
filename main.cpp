@@ -195,7 +195,7 @@ void CommandOp::edit(const std::vector<std::string>& input, DataBase<Field>& db)
     size_t n = db.size();
     
     for (; i < n; i++) {
-        if (db[i].get_id() == targetId) 
+        if (db[i].getId() == targetId) 
             break;
     }
     if (i >= n) {
@@ -203,10 +203,10 @@ void CommandOp::edit(const std::vector<std::string>& input, DataBase<Field>& db)
         return;
     }
 
-    db[i].set_firstName(input[2]);
-    db[i].set_secondName(input[3]);
-    db[i].set_schoolClass(input[4]);
-    db[i].set_age(stoi(input[5]));
+    db[i].setFirstName(input[2]);
+    db[i].setSecondName(input[3]);
+    db[i].setSchoolClass(input[4]);
+    db[i].setAge(stoi(input[5]));
 
     std::cout << "Slot has been changed.\n" << std::endl;
 }
@@ -223,7 +223,7 @@ void CommandOp::regenerate(const std::vector<std::string>& input, DataBase<Field
 
     size_t n = db.size();
     for (size_t i = 0; i < n; i++) {
-        db[i].set_id(i + 1);
+        db[i].setId(i + 1);
     }
 
     std::cout << "All ids have been regenerated.\n" << std::endl;
@@ -282,7 +282,7 @@ void CommandOp::add_slot(const std::vector<std::string>& input, DataBase<Field>&
     size_t n = db.size();
     int cur = 0;
     for (int i = 0; i < n; i++) {
-        cur = db[i].get_id();
+        cur = db[i].getId();
         id = cur > id ? cur : id;
     }
     id++;
@@ -316,7 +316,7 @@ void CommandOp::remove_slot(const std::vector<std::string>& input, DataBase<Fiel
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
-        if (db[i].get_id() == targetId) {
+        if (db[i].getId() == targetId) {
             db.removeSlot(i);
             std::cout << "Slot removed.\n" << std::endl;
             return;
@@ -369,19 +369,19 @@ void CommandOp::sort_after(const std::vector<std::string>& input, DataBase<Field
 
     std::cout << "Sorting after " << sortTarget << "..." << std::endl;
     if (sortTarget == "id") {
-        FieldOp::sort_id(db);
+        FieldOp::sortId(db);
     }
     else if (sortTarget == "first name") {
-        FieldOp::sort_firstName(db);
+        FieldOp::sortFirstName(db);
     }
     else if (sortTarget == "second name") {
-        FieldOp::sort_secondName(db);
+        FieldOp::sortSecondName(db);
     }
     else if (sortTarget == "class") {
-        FieldOp::sort_schoolClass(db);
+        FieldOp::sortSchoolClass(db);
     }
     else if (sortTarget == "age") {
-        FieldOp::sort_age(db);
+        FieldOp::sortAge(db);
     }
     else {
         std::cerr << "Element " << sortTarget << " does not exist!\n" << std::endl;
@@ -411,19 +411,19 @@ void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataB
 
     std::cout << "Sorting in decreasing order after " << sortTarget << "..." << std::endl;
     if (sortTarget == "id") {
-        FieldOp::dSort_id(db);
+        FieldOp::dSortId(db);
     }
     else if (sortTarget == "first name") {
-        FieldOp::dSort_firstName(db);
+        FieldOp::dSortFirstName(db);
     }
     else if (sortTarget == "second name") {
-        FieldOp::dSort_secondName(db);
+        FieldOp::dSortSecondName(db);
     }
     else if (sortTarget == "class") {
-        FieldOp::dSort_schoolClass(db);
+        FieldOp::dSortSchoolClass(db);
     }
     else if (sortTarget == "age") {
-        FieldOp::dSort_age(db);
+        FieldOp::dSortAge(db);
     }
     else {
         std::cout << "Element " << sortTarget << " does not exist!\n" << std::endl;

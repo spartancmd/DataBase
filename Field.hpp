@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <string_view> // view string without copying 
 
 // after following schema: id, first name, second name, class, age
 class Field {
@@ -53,33 +54,27 @@ public:
     std::string getRowLine(const char sep = '\t') const;
 
     
-    unsigned get_id() const;
+    unsigned getId() const;
 
-    const char* get_firstName() const;
+    const char* getFirstName() const;
 
-    const char* get_secondName() const;
+    const char* getSecondName() const;
 
-    const char* get_schoolClass() const;
+    const char* getSchoolClass() const;
 
-    short get_age() const;
+    short getAge() const;
 
 // ******* set operators ******* //
 
-    int set_id(unsigned);
+    int setId(unsigned);
 
-    int set_firstName(const char*);
+    int setFirstName(const std::string&);
 
-    int set_firstName(const std::string&);
+    int setSecondName(const std::string&); 
 
-    int set_secondName(const char*); 
+    int setSchoolClass(const std::string&); 
 
-    int set_secondName(const std::string&); 
-
-    int set_schoolClass(const char*); 
-
-    int set_schoolClass(const std::string&); 
-
-    int set_age(short);
+    int setAge(short);
 
 // **** operators **** //
 
@@ -172,11 +167,11 @@ void Field::parseFromCsv(const std::string& str, const char sep) {
     age = std::stoi(elements[4]);
 }
 
-inline std::string Field::parseToCsv(const char sep) const {
+std::string Field::parseToCsv(const char sep) const {
     return std::to_string(id) + sep + '\"' + firstName + '\"' + sep + '\"' +  secondName + '\"' + sep + '\"' + schoolClass + '\"' + sep + std::to_string(age) + '\n';
 }
 
-inline std::string Field::headerCsv(const char sep) {
+std::string Field::headerCsv(const char sep) {
     return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep +  "Age" + '\n';
 }
 
@@ -184,84 +179,61 @@ inline std::string Field::headerCsv(const char sep) {
 
 // ******* get operators ******* //
 
-inline std::string Field::getHeadLine(const char sep) {
+std::string Field::getHeadLine(const char sep) {
     return std::string{"Id"} + sep + "First name" + sep + "Second name" + sep + "School class" + sep + "Age";
 }
 
 std::vector<std::string> Field::getHeadVector() {
-    std::vector<std::string> headLine(5);
-
-    headLine[0] = "Id";
-    headLine[1] = "First name";
-    headLine[2] = "Second name";
-    headLine[3] = "School class";
-    headLine[4] = "Age";
-
-    return headLine;
+    return {"Id", "First name", "Second name", "School class", "Age"};
 }
 
-inline std::string Field::getRowLine(const char sep) const {
+std::string Field::getRowLine(const char sep) const {
     return std::to_string(id) + sep + firstName + sep +  secondName + sep + schoolClass + sep + std::to_string(age);
 }
 
-unsigned Field::get_id() const {
+unsigned Field::getId() const {
     return id;
 }
 
-const char* Field::get_firstName() const {
+const char* Field::getFirstName() const {
     return firstName.c_str(); 
 }
 
-const char* Field::get_secondName() const {
+const char* Field::getSecondName() const {
     return secondName.c_str();
 }
 
-const char* Field::get_schoolClass() const {
+const char* Field::getSchoolClass() const {
     return schoolClass.c_str(); 
 }
 
-short Field::get_age() const {
+short Field::getAge() const {
     return age;
 }
 
 // ******* set operators ******* //
 
-int Field::set_id(unsigned newVal) {
+int Field::setId(unsigned newVal) {
     id = newVal;
     return 0;
 }
 
-int Field::set_firstName(const char* newVal) {
+int Field::setFirstName(const std::string& newVal) {
     firstName = newVal;
     return 0;
 }
 
-int Field::set_firstName(const std::string& newVal) {
-    firstName = newVal;
-    return 0;
-}
-
-int Field::set_secondName(const char* newVal) {
+int Field::setSecondName(const std::string& newVal) {
     secondName = newVal;
     return 0;
 }
 
-int Field::set_secondName(const std::string& newVal) {
-    secondName = newVal;
-    return 0;
-}
-
-int Field::set_schoolClass(const char* newVal) {
+int Field::setSchoolClass(const std::string& newVal) {
     schoolClass = newVal;
     return 0;
 }
 
-int Field::set_schoolClass(const std::string& newVal) {
-    schoolClass = newVal;
-    return 0;
-}
-
-int Field::set_age(short newVal) {
+int Field::setAge(short newVal) {
     age = newVal;
     return 0;
 }
@@ -270,7 +242,6 @@ int Field::set_age(short newVal) {
 // **** operators **** //
 
 Field& Field::operator=(const Field& other) {
-    
     id = other.id;
     firstName = other.firstName;
     secondName = other.secondName;

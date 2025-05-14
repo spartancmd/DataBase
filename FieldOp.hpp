@@ -1,3 +1,6 @@
+#pragma once
+#include <cstring>
+
 #include "DataBase.hpp"
 #include "Field.hpp"
 
@@ -5,8 +8,8 @@
 // contains operations (such as sort) for class DataBase when used with Type Field
 namespace FieldOp {
 
-    template<typename T>
-    void swap(T& a, T& b);
+    // template<typename T>
+    // void swap(T& a, T& b);
 
     // looks if the first string is greater than the second (lower case the strings before giving as argument)
     bool strGreater(const std::string& str1, const std::string& str2);
@@ -24,36 +27,36 @@ namespace FieldOp {
 
 // ***** sort in increasing (A - Z) order ***** //
 
-    void sort_firstName(DataBase<Field>& db);
+    void sortFirstName(DataBase<Field>& db);
     
-    void sort_secondName(DataBase<Field>& db);
+    void sortSecondName(DataBase<Field>& db);
 
-    void sort_schoolClass(DataBase<Field>& db);
+    void sortSchoolClass(DataBase<Field>& db);
 
-    void sort_id(DataBase<Field>& db);
+    void sortId(DataBase<Field>& db);
 
-    void sort_age(DataBase<Field>& db);
+    void sortAge(DataBase<Field>& db);
       
 
 // ***** sort in decreasing (Z - A) order ***** //
 
-    void dSort_firstName(DataBase<Field>& db);
+    void dSortFirstName(DataBase<Field>& db);
     
-    void dSort_secondName(DataBase<Field>& db);
+    void dSortSecondName(DataBase<Field>& db);
 
-    void dSort_schoolClass(DataBase<Field>& db);
+    void dSortSchoolClass(DataBase<Field>& db);
 
-    void dSort_id(DataBase<Field>& db);
+    void dSortId(DataBase<Field>& db);
 
-    void dSort_age(DataBase<Field>& db);
+    void dSortAge(DataBase<Field>& db);
 };
 
-template<typename T>
-void FieldOp::swap(T& a, T& b) {
-    T tmp = a;
-    a = b;
-    b = tmp;
-}
+// template<typename T>
+// void FieldOp::swap(T& a, T& b) {
+//     T tmp = a;
+//     a = b;
+//     b = tmp;
+// }
 
 bool FieldOp::strGreater(const std::string& str1, const std::string& str2) {
     size_t n1 = str1.length();
@@ -79,12 +82,7 @@ std::string FieldOp::lowerCase(const std::string& str) {
     size_t n = str.length();
 
     for (size_t i = 0; i < n; i++) {
-        char ch = str[i];
-
-        if (ch >= 'A' && ch <= 'Z') 
-            ch += 'a' - 'A';
-
-        res += ch;
+        res += std::tolower(str[i]);
     }
 
     return res;
@@ -109,12 +107,12 @@ std::vector<Field> FieldOp::searchFor(DataBase<Field>& db, const std::string& ke
     // iterate through each field of db, and add to res if there's at least one element with variable == keyWord
     for (const Field& cur : db) {
         // if the keyword is a digit
-        if(is_number(keyWord) && (cur.get_age() == stoi(keyWord) || cur.get_id() == stoi(keyWord))) {
+        if(is_number(keyWord) && (cur.getAge() == stoi(keyWord) || cur.getId() == stoi(keyWord))) {
             res.push_back(cur);
             continue;
         }
         // if the keyword is foundable in string variables
-        if (std::string{cur.get_firstName()}.find(keyWord) != std::string::npos || std::string{cur.get_secondName()}.find(keyWord) != std::string::npos || std::string{cur.get_schoolClass()}.find(keyWord) != std::string::npos) {
+        if (std::string{cur.getFirstName()}.find(keyWord) != std::string::npos || std::string{cur.getSecondName()}.find(keyWord) != std::string::npos || std::string{cur.getSchoolClass()}.find(keyWord) != std::string::npos) {
             res.push_back(cur);
             continue;
         }
@@ -125,125 +123,101 @@ std::vector<Field> FieldOp::searchFor(DataBase<Field>& db, const std::string& ke
 
 // ***** sort in increasing (A - Z) order ***** //
 
-void FieldOp::sort_firstName(DataBase<Field>& db) {
+void FieldOp::sortFirstName(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[j].get_firstName()), lowerCase(db[j + 1].get_firstName()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (strGreater(lowerCase(db[j].getFirstName()), lowerCase(db[j + 1].getFirstName()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::sort_secondName(DataBase<Field>& db) {
+void FieldOp::sortSecondName(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[j].get_secondName()), lowerCase(db[j + 1].get_secondName()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (strGreater(lowerCase(db[j].getSecondName()), lowerCase(db[j + 1].getSecondName()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::sort_schoolClass(DataBase<Field>& db) {
+void FieldOp::sortSchoolClass(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (strGreater(lowerCase(db[j].get_schoolClass()), lowerCase(db[j + 1].get_schoolClass()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (strGreater(lowerCase(db[j].getSchoolClass()), lowerCase(db[j + 1].getSchoolClass()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::sort_id(DataBase<Field>& db) {
-    size_t n = db.size();
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < (n - 1 - i); j++) {
-            if (db[j].get_id() > db[j + 1].get_id()) {
-                swap<Field>(db[j], db[j + 1]);
-            }
-        }
-    }
+void FieldOp::sortId(DataBase<Field>& db) {
+    std::sort(db.begin(), db.end(), [] (const Field& a, const Field& b) {
+        return a.getId() < b.getId();
+    });
 }
 
-void FieldOp::sort_age(DataBase<Field>& db) {
-    size_t n = db.size();
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < (n - 1 - i); j++) {
-            if (db[j].get_age() > db[j + 1].get_age()) {
-                swap<Field>(db[j], db[j + 1]);
-            }
-        }
-    }
+void FieldOp::sortAge(DataBase<Field>& db) {
+    std::sort(db.begin(), db.end(), [] (const Field& a, const Field& b) {
+        return a.getAge() < b.getAge();
+    });
 }
 
 
 // ***** sort in decreasing (Z - A) order ***** //
 
-void FieldOp::dSort_firstName(DataBase<Field>& db) {
+void FieldOp::dSortFirstName(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[j].get_firstName()), lowerCase(db[j + 1].get_firstName()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (!strGreater(lowerCase(db[j].getFirstName()), lowerCase(db[j + 1].getFirstName()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::dSort_secondName(DataBase<Field>& db) {
+void FieldOp::dSortSecondName(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[j].get_secondName()), lowerCase(db[j + 1].get_secondName()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (!strGreater(lowerCase(db[j].getSecondName()), lowerCase(db[j + 1].getSecondName()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::dSort_schoolClass(DataBase<Field>& db) {
+void FieldOp::dSortSchoolClass(DataBase<Field>& db) {
     size_t n = db.size();
 
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < (n - i - 1); j++) {
-            if (!strGreater(lowerCase(db[j].get_schoolClass()), lowerCase(db[j + 1].get_schoolClass()))) {
-                swap<Field>(db[j], db[j + 1]);
+            if (!strGreater(lowerCase(db[j].getSchoolClass()), lowerCase(db[j + 1].getSchoolClass()))) {
+                std::swap(db[j], db[j + 1]);
             }
         }
     }
 }
 
-void FieldOp::dSort_id(DataBase<Field>& db) {
-    size_t n = db.size();
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < (n - 1 - i); j++) {
-            if (db[j].get_id() < db[j + 1].get_id()) {
-                swap<Field>(db[j], db[j + 1]);
-            }
-        }
-    }
+void FieldOp::dSortId(DataBase<Field>& db) {
+    std::sort(db.begin(), db.end(), [] (const Field& a, const Field& b) {
+        return b.getId() < a.getId();
+    });
 }
 
-void FieldOp::dSort_age(DataBase<Field>& db) {
-    size_t n = db.size();
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < (n - 1 - i); j++) {
-            if (db[j].get_age() < db[j + 1].get_age()) {
-                swap<Field>(db[j], db[j + 1]);
-            }
-        }
-    }
+void FieldOp::dSortAge(DataBase<Field>& db) {
+    std::sort(db.begin(), db.end(), [] (const Field& a, const Field& b) {
+        return b.getAge() < a.getAge();
+    });
 }
