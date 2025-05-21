@@ -10,10 +10,11 @@ class DataBase {
     bool stateFileLoaded = false;    // the state if the file is already loaded
     std::string filePath;     // contains the filepath that we've loaded from
 
-    static void swap(DataType& a, DataType& b);
+    // static void swap(DataType& a, DataType& b);
 
     // creates the file, if it doesn't exist yet
     static void createFile(const std::string& filePath);
+    
 public:
 // ***** constructor & destructor ***** //
 
@@ -72,12 +73,12 @@ public:
     auto end() const;
 };
 
-template <typename DataType>
-void DataBase<DataType>::swap(DataType& a, DataType& b) {
-    DataType tmp = a;
-    a = b;
-    b = tmp;
-}
+// template <typename DataType>
+// void DataBase<DataType>::swap(DataType& a, DataType& b) {
+//     DataType tmp = a;
+//     a = b;
+//     b = tmp;
+// }
 
 template <typename DataType>
 void DataBase<DataType>::createFile(const std::string& filePath) {
@@ -93,8 +94,7 @@ DataBase<DataType>::DataBase()
 {}
 
 template <typename DataType>
-DataBase<DataType>::DataBase(const std::string& path)
-{
+DataBase<DataType>::DataBase(const std::string& path) {
     load(path);
 }
 

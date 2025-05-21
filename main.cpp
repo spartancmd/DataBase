@@ -67,8 +67,6 @@ namespace CommandOp {
     void regenerate(const std::vector<std::string>& input, DataBase<Field>& db);
 }
 
-
-
 int main(int argc, char* argv[]) {
     DataBase<Field> db;
     std::string input;
@@ -245,10 +243,11 @@ void CommandOp::view_all(const std::vector<std::string>& input, DataBase<Field>&
         return;
     }
 
-    std::cout << Field::getHeadLine('\t') << std::endl;
+    printf("Id   First name         Second name       School class Age\n");
 
-    for (const auto& it : db) {
-        std::cout << it.getRowLine('\t') << std::endl;
+    for (const auto& person : db) {
+
+        printf("%3d  %-18s %-18s %-10s   %-100d\n", person.getId(), person.getFirstName(), person.getSecondName(), person.getSchoolClass(), person.getAge());
     }
     std::cout << std::endl;
 }
@@ -343,9 +342,11 @@ void CommandOp::search_for(const std::vector<std::string>& input, DataBase<Field
 
     std::vector<Field> slots = FieldOp::searchFor(db, input[1]);
 
-    std::cout << Field::getHeadLine() << std::endl;
-    for (const auto& it : slots) {
-        std::cout << it.getRowLine('\t') << std::endl;
+    printf("Id  First name  Second name School class Age\n");
+
+    for (const auto& person : db) {
+
+        printf("%-3d %-11s %-11s %-10s   %-100d\n", person.getId(), person.getFirstName(), person.getSecondName(), person.getSchoolClass(), person.getAge());
     }
     std::cout << std::endl;
 }
