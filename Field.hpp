@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstring>
 #include <vector>
 #include <string_view> // view string without copying 
 
@@ -30,6 +31,10 @@ public:
     Field(const Field& other);
 
     ~Field();
+
+    void outputToFile(std::ostream& file) const;
+
+    void readFromFile(std::istream& file);
 
     // parses given string (in .csv format) and sets the object variables.
     // str should have this form: id,"first name","second name","schoolclass", age
@@ -133,6 +138,72 @@ Field::Field(const Field& other)
 
 Field::~Field()
 {}
+
+/*
+unsigned id;
+std::string firstName;
+std::string secondName;
+std::string schoolClass;
+short age;
+*/
+
+
+void Field::outputToFile(std::ostream& file) const {
+    unsigned idTmp = id;
+    char firstNameTmp[21];
+    char secondNameTmp[21];
+    char schoolClassTmp[21];
+    short ageTmp = age;
+
+    strcpy(firstNameTmp, firstName.c_str());
+    strcpy(secondNameTmp, secondName.c_str());
+    strcpy(schoolClassTmp, schoolClass.c_str());
+
+    size_t n = sizeof(idTmp);
+    file.write(reinterpret_cast<char*>(&idTmp), n);
+    
+    n = sizeof(firstNameTmp) / sizeof(char);
+    file.write(reinterpret_cast<char*>(&firstNameTmp), n);
+
+    n = sizeof(secondNameTmp) / sizeof(char);
+    file.write(reinterpret_cast<char*>(&secondNameTmp), n);
+
+    n = sizeof(schoolClassTmp) / sizeof(char);
+    file.write(reinterpret_cast<char*>(&schoolClassTmp), n);
+
+    n = sizeof(ageTmp);
+    file.write(reinterpret_cast<char*>(&ageTmp), n);
+}
+
+void Field::readFromFile(std::istream& file) {
+    unsigned idTmp = id;
+    char firstNameTmp[21];
+    char secondNameTmp[21];
+    char schoolClassTmp[21];
+    short ageTmp = age;
+
+    size_t n = sizeof(idTmp);
+    file.read(reinterpret_cast<char*>(&idTmp), n);
+    
+    n = sizeof(firstNameTmp) / sizeof(char);
+    file.read(reinterpret_cast<char*>(&firstNameTmp), n);
+
+    n = sizeof(secondNameTmp) / sizeof(char);
+    file.read(reinterpret_cast<char*>(&secondNameTmp), n);
+
+    n = sizeof(schoolClassTmp) / sizeof(char);
+    file.read(reinterpret_cast<char*>(&schoolClassTmp), n);
+
+    n = sizeof(ageTmp) / sizeof(char);
+    file.read(reinterpret_cast<char*>(&ageTmp), n);
+
+    id = idTmp;
+    firstName = firstNameTmp;
+    secondName = secondNameTmp;
+    schoolClass = schoolClassTmp;
+    age = ageTmp;
+}
+
 
 void Field::parseFromCsv(const std::string& str, const char sep) {
     std::vector<std::string> elements; // should contain the elements that are in str

@@ -153,22 +153,29 @@ const DataType& DataBase<DataType>::operator[](size_t idx) const {
     return slots[idx];
 }
 
+bool is_empty(std::ifstream& file) {
+    return file.tellg() == 0 && file.peek() == std::ifstream::traits_type::eof();
+}
+
 template <typename DataType>
 void DataBase<DataType>::load(const std::string& path) {
     createFile(path);
-    std::ifstream file{path};
-    std::string line;
+    std::ifstream file(path, std::ios::in | std::ios::binary);
 
-    while(std::getline(file, line)) {
-        
-        if (line.empty()) {
-            continue;
-        }
-        if (line.back() == '\n') {
-            line.pop_back();
+    while (file) {
+        if (is_empty(file)) {
+            break;
         }
 
-        slots.emplace_back(line, ','); // why ','? It's a parameter sep in constructor of struct Field
+        DataType bfr;
+        bfr.readFromFile(file);
+
+        if (!file || file.eof()) {
+            file.clear(); // Clear EOF flag to allow closing
+            break;
+        }
+
+        slots.push_back(bfr);
     }
 
     file.close();
@@ -178,21 +185,17 @@ void DataBase<DataType>::load(const std::string& path) {
 
 template <typename DataType>
 void DataBase<DataType>::upload() const {
-    std::ofstream file{filePath};
-
-    for (const DataType& slot: slots) {
-        file << slot.parseToCsv(',');
-    }
-
-    file.close();
+    upload(filePath);
 }
 
 template <typename DataType>
 void DataBase<DataType>::upload(const std::string& path) const {
-    std::ofstream file{path};
+    std::ofstream file(path, std::ios::out | std::ios::binary);
+    size_t n = slots.size();
+    size_t dataSize = sizeof(DataType);
 
-    for (const DataType& slot: slots) {
-        file << slot.parseToCsv(',');
+    for (size_t i = 0; i < n; i++) {
+        slots[i].outputToFile(file);
     }
 
     file.close();

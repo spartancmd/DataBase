@@ -8,6 +8,8 @@ Written by Deniel
 A list of what else I should/can do:
 - [ ] Improve TUI by adding a window in terminal with the list of data (perhaps use ncurses)
 - [ ] Add tests of users input into `main.cpp`
+- [ ] Test the functionality
+- [X] Save the files as binary
 - [X] DataBase.hpp: put .upload() into the destructor
 - [X] add edit function to edit element by id: edit \<id\> \<first name\> \<second name\> \<class\> \<age\> 
 - [X] add function to regenerate all ids: regenerate-ids
