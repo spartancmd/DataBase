@@ -229,7 +229,7 @@ void Field::parseFromCsv(const std::string& str, const char sep) {
 
         i++;
     }
-
+    
     // the extracted elements are put into our class variables
     id = std::stoi(elements[0]);
     firstName = removeQM(elements[1]);

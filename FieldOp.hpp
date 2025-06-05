@@ -18,8 +18,7 @@ namespace FieldOp {
     std::string lowerCase(const std::string& str);
 
     bool is_number(const std::string& str);
-
-
+    
 // ***** search ***** //
 
     // returns all slots that include the given keyword
