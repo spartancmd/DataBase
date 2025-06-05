@@ -17,6 +17,7 @@
 *.json
 *.csv
 
+*.bin
 *.exe
 *.out
 *.pp

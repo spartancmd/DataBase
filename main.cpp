@@ -246,7 +246,7 @@ void CommandOp::view_all(const std::vector<std::string>& input, DataBase<Field>&
     printf("Id   First name         Second name        School class Age\n");
     for (const auto& person : db) {
 
-        printf("%3d  %-18s %-18s %-12s %-3d\n", person.getId(), person.getFirstName(), person.getSecondName(), person.getSchoolClass(), person.getAge());
+        printf("%3d  %-18s %-18s %-12s %-3d\n", person.getId(), person.getFirstName().c_str(), person.getSecondName().c_str(), person.getSchoolClass().c_str(), person.getAge());
     }
     std::cout << std::endl;
 }
@@ -344,7 +344,7 @@ void CommandOp::search_for(const std::vector<std::string>& input, DataBase<Field
     printf("Id   First name         Second name        School class Age\n");
     for (const auto& person : slots) {
 
-        printf("%3d  %-18s %-18s %-12s %-3d\n", person.getId(), person.getFirstName(), person.getSecondName(), person.getSchoolClass(), person.getAge());
+        printf("%3d  %-18s %-18s %-12s %-3d\n", person.getId(), person.getFirstName().c_str(), person.getSecondName().c_str(), person.getSchoolClass().c_str(), person.getAge());
     }
     std::cout << std::endl;
 }
@@ -434,15 +434,16 @@ void CommandOp::sort_decrease_after(const std::vector<std::string>& input, DataB
 
 void CommandOp::help(const std::vector<std::string>& input, DataBase<Field>& db) {
     std::cout << R"(Commands to choose:
-    open <filePath>\nview-all 
-    exit (optional: <filePath>)
-    add-slot <first name> <second name> <class> <age>
-    remove-slot <id>
-    search-for <keyword>
-    sort-after id/\"first name\"/\"second name\"/class/age
-    sort-decrease-after id/\"first name\"/\"second name\"/class/age
-    edit <id> <first name> <second name> <class> <age>
-    regenerate-ids)" << std::endl;
+open <filePath>
+view-all 
+exit (optional: <filePath>)
+add-slot <first name> <second name> <class> <age>
+remove-slot <id>
+search-for <keyword>
+sort-after id/\"first name\"/\"second name\"/class/age
+sort-decrease-after id/\"first name\"/\"second name\"/class/age
+edit <id> <first name> <second name> <class> <age>
+regenerate-ids)" << std::endl;
 }
 
 void CommandOp::parseInput(std::vector<std::string>& target, const std::string& source, const char sep) {

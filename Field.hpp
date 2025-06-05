@@ -61,11 +61,11 @@ public:
     
     unsigned getId() const;
 
-    const char* getFirstName() const;
+    std::string getFirstName() const;
 
-    const char* getSecondName() const;
+    std::string getSecondName() const;
 
-    const char* getSchoolClass() const;
+    std::string getSchoolClass() const;
 
     short getAge() const;
 
@@ -163,13 +163,13 @@ void Field::outputToFile(std::ostream& file) const {
     file.write(reinterpret_cast<char*>(&idTmp), n);
     
     n = sizeof(firstNameTmp) / sizeof(char);
-    file.write(reinterpret_cast<char*>(&firstNameTmp), n);
+    file.write(firstNameTmp, n);
 
     n = sizeof(secondNameTmp) / sizeof(char);
-    file.write(reinterpret_cast<char*>(&secondNameTmp), n);
+    file.write(secondNameTmp, n);
 
     n = sizeof(schoolClassTmp) / sizeof(char);
-    file.write(reinterpret_cast<char*>(&schoolClassTmp), n);
+    file.write(schoolClassTmp, n);
 
     n = sizeof(ageTmp);
     file.write(reinterpret_cast<char*>(&ageTmp), n);
@@ -186,16 +186,20 @@ void Field::readFromFile(std::istream& file) {
     file.read(reinterpret_cast<char*>(&idTmp), n);
     
     n = sizeof(firstNameTmp) / sizeof(char);
-    file.read(reinterpret_cast<char*>(&firstNameTmp), n);
+    file.read(firstNameTmp, n);
 
     n = sizeof(secondNameTmp) / sizeof(char);
-    file.read(reinterpret_cast<char*>(&secondNameTmp), n);
+    file.read(secondNameTmp, n);
 
     n = sizeof(schoolClassTmp) / sizeof(char);
-    file.read(reinterpret_cast<char*>(&schoolClassTmp), n);
+    file.read(schoolClassTmp, n);
 
     n = sizeof(ageTmp) / sizeof(char);
     file.read(reinterpret_cast<char*>(&ageTmp), n);
+
+    firstNameTmp[20] = '\0';
+    secondNameTmp[20] = '\0';
+    schoolClassTmp[20] = '\0';
 
     id = idTmp;
     firstName = firstNameTmp;
@@ -229,7 +233,7 @@ void Field::parseFromCsv(const std::string& str, const char sep) {
 
         i++;
     }
-    
+
     // the extracted elements are put into our class variables
     id = std::stoi(elements[0]);
     firstName = removeQM(elements[1]);
@@ -266,16 +270,16 @@ unsigned Field::getId() const {
     return id;
 }
 
-const char* Field::getFirstName() const {
-    return firstName.c_str(); 
+std::string Field::getFirstName() const {
+    return firstName;
 }
 
-const char* Field::getSecondName() const {
-    return secondName.c_str();
+std::string Field::getSecondName() const {
+    return secondName;
 }
 
-const char* Field::getSchoolClass() const {
-    return schoolClass.c_str(); 
+std::string Field::getSchoolClass() const {
+    return schoolClass;
 }
 
 short Field::getAge() const {
