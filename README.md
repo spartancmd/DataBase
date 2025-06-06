@@ -45,7 +45,7 @@ For a list of commands you can type "help" in the programm or read it here:
 
 
 ### Work with data base manually
-The data base is made to work with .csv files.
+The data base is made to work with binary files.
 
 After initializing the data base you should manually load the file contant via `db.load(filePath)`
 

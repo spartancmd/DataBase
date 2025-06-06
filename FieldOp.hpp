@@ -111,7 +111,7 @@ std::vector<Field> FieldOp::searchFor(DataBase<Field>& db, const std::string& ke
             continue;
         }
         // if the keyword is foundable in string variables
-        if (std::string{cur.getFirstName()}.find(keyWord) != std::string::npos || std::string{cur.getSecondName()}.find(keyWord) != std::string::npos || std::string{cur.getSchoolClass()}.find(keyWord) != std::string::npos) {
+        if (cur.getFirstName().find(keyWord) != std::string::npos || cur.getSecondName().find(keyWord) != std::string::npos || cur.getSchoolClass().find(keyWord) != std::string::npos) {
             res.push_back(cur);
             continue;
         }

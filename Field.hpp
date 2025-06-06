@@ -139,15 +139,6 @@ Field::Field(const Field& other)
 Field::~Field()
 {}
 
-/*
-unsigned id;
-std::string firstName;
-std::string secondName;
-std::string schoolClass;
-short age;
-*/
-
-
 void Field::outputToFile(std::ostream& file) const {
     unsigned idTmp = id;
     char firstNameTmp[21];

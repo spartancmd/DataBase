@@ -6,7 +6,7 @@
 
 template<typename DataType>
 class DataBase {
-    std::vector<DataType> slots; // containes the fields
+    std::vector<DataType> slots; // contains the fields
     bool stateFileLoaded = false;    // the state if the file is already loaded
     std::string filePath;     // contains the filepath that we've loaded from
 
